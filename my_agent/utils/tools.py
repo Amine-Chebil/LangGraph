@@ -18,7 +18,7 @@ def fetch_categories() -> List[str]:
      "Spa",
     "Religion",
     "Group request",
-    "Connecting  rooms",
+    "Connecting rooms",
     "Disabled",
     "Bar",
     "Parking",

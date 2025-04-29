@@ -1,7 +1,7 @@
 from typing import TypedDict, Literal
 
 from langgraph.graph import StateGraph, END
-from my_agent.utils.nodes import call_model, should_continue, tool_node
+from my_agent.utils.nodes import call_model, should_continue, tool_node, summarize_email
 from my_agent.utils.state import AgentState
 
 
@@ -13,13 +13,17 @@ class GraphConfig(TypedDict):
 # Define a new graph
 workflow = StateGraph(AgentState, config_schema=GraphConfig)
 
-# Define the two nodes we will cycle between
+# Define the nodes we will cycle between
+workflow.add_node("summarizer", summarize_email)
 workflow.add_node("agent", call_model)
 workflow.add_node("action", tool_node)
 
-# Set the entrypoint as `agent`
+# Set the entrypoint as the summarizer
 # This means that this node is the first one called
-workflow.set_entry_point("agent")
+workflow.set_entry_point("summarizer")
+
+# Add an edge from the summarizer to the agent
+workflow.add_edge("summarizer", "agent")
 
 # We now add a conditional edge
 workflow.add_conditional_edges(
