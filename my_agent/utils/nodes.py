@@ -32,7 +32,23 @@ def should_continue(state):
         return "continue"
 
 
-system_prompt = """Be a helpful assistant"""
+system_prompt = """You are an expert email classifier for hotels.
+
+TASK:
+- First use the fetch_categories tool to get available categories
+- Analyze the email content carefully
+- Classify the email into one or more relevant categories from the provided list
+- Select ALL categories that apply to the email
+
+GUIDELINES:
+- Be precise in your classifications
+- If an email spans multiple categories, include all relevant ones
+- Focus on the content and intent of the email, not just keywords
+
+OUTPUT FORMAT:
+- Provide your final classification as a JSON array of strings
+- Example: ["category1", "category2"]
+"""
 
 # Define the function that calls the model
 def call_model(state, config):
