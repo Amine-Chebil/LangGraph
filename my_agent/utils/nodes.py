@@ -89,7 +89,7 @@ def should_continue(state):
         return "continue"
 
 
-system_prompt = """You are an expert email classifier for hotel management systems with extensive understanding of hospitality operations.
+classify_system_prompt = """You are an expert email classifier for hotel management systems with extensive understanding of hospitality operations.
 
 TASK:
 - First use the fetch_categories tool to get the complete list of available categories
@@ -109,12 +109,12 @@ only the classification result in JSON format:
 """
 
 # Define the function that calls the model
-def call_model(state, config):
+def classify_email(state, config):
     messages = state["messages"]
     model_name = config.get('configurable', {}).get("model_name", "groq")
     
     # Add the system prompt for classification
-    messages_with_system = [SystemMessage(content=system_prompt)] + messages
+    messages_with_system = [SystemMessage(content=classify_system_prompt)] + messages
     
     model = _get_model(model_name)
     response = model.invoke(messages_with_system)

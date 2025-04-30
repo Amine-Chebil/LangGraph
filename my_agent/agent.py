@@ -1,7 +1,7 @@
 from typing import TypedDict, Literal
 
 from langgraph.graph import StateGraph, END
-from my_agent.utils.nodes import call_model, should_continue, tool_node, summarize_email
+from my_agent.utils.nodes import classify_email, summarize_email, should_continue, tool_node
 from my_agent.utils.state import AgentState
 
 
@@ -15,7 +15,7 @@ workflow = StateGraph(AgentState, config_schema=GraphConfig)
 
 # Define the nodes we will cycle between
 workflow.add_node("summarizer", summarize_email)
-workflow.add_node("agent", call_model)
+workflow.add_node("classifier", classify_email)
 workflow.add_node("action", tool_node)
 
 # Set the entrypoint as the summarizer
@@ -23,13 +23,13 @@ workflow.add_node("action", tool_node)
 workflow.set_entry_point("summarizer")
 
 # Add an edge from the summarizer to the agent
-workflow.add_edge("summarizer", "agent")
+workflow.add_edge("summarizer", "classifier")
 
 # We now add a conditional edge
 workflow.add_conditional_edges(
     # First, we define the start node. We use `agent`.
     # This means these are the edges taken after the `agent` node is called.
-    "agent",
+    "classifier",
     # Next, we pass in the function that will determine which node is called next.
     should_continue,
     # Finally we pass in a mapping.
@@ -48,7 +48,7 @@ workflow.add_conditional_edges(
 
 # We now add a normal edge from `tools` to `agent`.
 # This means that after `tools` is called, `agent` node is called next.
-workflow.add_edge("action", "agent")
+workflow.add_edge("action", "classifier")
 
 # Finally, we compile it!
 # This compiles it into a LangChain Runnable,
