@@ -5,6 +5,8 @@ from langchain_groq import ChatGroq
 from my_agent.utils.tools import tools
 from langgraph.prebuilt import ToolNode
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+import json
+import re
 
 
 @lru_cache(maxsize=4)
@@ -75,7 +77,9 @@ def summarize_email(state, config):
     summary_message = AIMessage(content=f"Email summary:\n{summary}")
     
     # Return the summary message to be added to state
-    return {"messages": [summary_message]}
+    return {"messages": [summary_message],
+            "email_summary": summary
+            }
 
 # Define the function that determines whether to continue or not
 def should_continue(state):
@@ -118,8 +122,23 @@ def classify_email(state, config):
     
     model = _get_model(model_name)
     response = model.invoke(messages_with_system)
-    # We return a list, because this will get added to the existing list
-    return {"messages": [response]}
+    
+    content = response.content
+    categories = []
+    try:
+        # Look for JSON array in response
+        match = re.search(r'\[(.*?)\]', content)
+        if match:
+            json_str = f"[{match.group(1)}]"
+            categories = json.loads(json_str)
+    except Exception:
+        pass
+    
+    # Return both the message and update predicted_categories
+    return {
+        "messages": [response],
+        "predicted_categories": categories  # Store categories in dedicated field
+    }
 
 # Define the function to execute tools
 tool_node = ToolNode(tools)
