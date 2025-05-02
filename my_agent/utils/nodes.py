@@ -86,10 +86,11 @@ def should_continue(state):
 
 
 classify_system_prompt = """You are a multi-label classifier for hotel guest emails. 
+your job is to identify the correct categories for the email.
 
 TASK:
 1. Get the list of available categories using the fetch_categories tool
-2. use the email summary to Perform multi-label classification based on the available categories ONLY
+2. Perform multi-label classification based on the available categories ONLY
 
 Tools:
 - fetch_categories: Get the list of available categories.
