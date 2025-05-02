@@ -15,7 +15,7 @@ def fetch_categories() -> List[str]:
     # In production, this would fetch from a database or API
     # For now returning static categories
     return [
-     "Spa",
+    "Spa",
     "Religion",
     "Group request",
     "Connecting rooms",
@@ -61,8 +61,7 @@ def fetch_categories() -> List[str]:
     "Contact staff",
     "Fallback",
     "Gym",
-    "Tennis",
-    "Other"
+    "Tennis"
     ]
 
 # Update the tools list

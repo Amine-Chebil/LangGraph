@@ -25,27 +25,19 @@ def _get_model(model_name: str, bind_tools: bool = True):
     return model
 
 # Define the summarization prompt
-summarize_system_prompt = """You are an expert email summarizer for hotels specializing in extracting critical information.
+summarize_system_prompt = """You are an AI assistant specialized in hotel guest correspondence.  
+Your task is to read each email and extract ONLY the main request(s) or question(s) about:
+ - Hotel amenities and services  
+ - Local area information  
+ - Booking and reservation details  
 
-TASK:
-- Extract and summarize the key points from hotel guest emails
+Follow these rules:  
+1. Begin each bullet with a strong verb (e.g. "Requests…", "Asks…", "Checks…").  
+2. Preserve exact information from the email. 
+3. **Use as few bullets as necessary**—omit anything not explicitly mentioned.  
+4. Write formal, concise sentences.
 
-FOCUS ON:
-- Reservation details (dates, room types, etc.)
-- Specific requests, complaints, or inquiries
-- Special requirements or expectations
-
-FORMAT:
-- concise key points
-- Use clear, direct language
-- Maintain factual accuracy
-- Include all critical details for hotel staff to understand and categorize the request
-- Avoid unnecessary details or redundant information
-
-OUTPUT:
-only the key points.
-
-Your summary should allow hotel staff to quickly understand the email's purpose and required actions without reading the full message.
+Note: Your summary will be used to generate a response to the client, so ensure it is clear and accurate.
 """
 
 # Define the summarization function
@@ -93,27 +85,25 @@ def should_continue(state):
         return "continue"
 
 
-classify_system_prompt = """You are an expert email classifier for hotel management systems with extensive understanding of hospitality operations.
+classify_system_prompt = """You are a multi-label classifier for hotel guest emails. 
 
 TASK:
-- First use the fetch_categories tool to get the complete list of available categories
-- Analyze the provided email summary carefully
-- Identify ALL relevant categories that apply to the email (can be multiple)
-- Be precise and thorough in your classification
+1. Get the list of available categories using the fetch_categories tool
+2. use the email summary to Perform multi-label classification based on the available categories ONLY
 
-CLASSIFICATION GUIDELINES:
-- Match content to the most specific categories available
-- Consider both explicit requests and implied needs
-- Classify by action required, not just keywords mentioned
-- Multiple categories may apply to a single email
+Tools:
+- fetch_categories: Get the list of available categories.
 
 OUTPUT FORMAT:
-only the classification result in JSON format:
-- Format: ["category1", "category2", ...]
+Provide ONLY the result in JSON format:
+- No labels → []
+- One label → ["category"]
+- Two or more labels → ["category1", "category2", ...]
 """
 
 # Define the function that calls the model
 def classify_email(state, config):
+
     messages = state["messages"]
     model_name = config.get('configurable', {}).get("model_name", "groq")
     
