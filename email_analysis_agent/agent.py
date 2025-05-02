@@ -1,8 +1,8 @@
 from typing import TypedDict, Literal
 
 from langgraph.graph import StateGraph, END
-from my_agent.utils.nodes import classify_email, summarize_email, should_continue, tool_node
-from my_agent.utils.state import AgentState
+from email_analysis_agent.utils.nodes import classify_email, summarize_email, should_continue, tool_node
+from email_analysis_agent.utils.state import AgentState
 
 
 # Define the config

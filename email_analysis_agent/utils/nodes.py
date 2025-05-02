@@ -2,7 +2,7 @@ from functools import lru_cache
 from langchain_anthropic import ChatAnthropic
 from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
-from my_agent.utils.tools import tools
+from email_analysis_agent.utils.tools import tools
 from langgraph.prebuilt import ToolNode
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 import json

@@ -32,7 +32,7 @@ async def process_email(request: EmailRequest):
     try:
         # Construct the payload for LangGraph
         payload = {
-            "assistant_id": "agent",
+            "assistant_id": "email_analysis",
             "input": {
                 "email_body": request.email_text,
             },
