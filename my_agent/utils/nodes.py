@@ -68,10 +68,11 @@ def summarize_email(state, config):
     # Create a summary message
     summary_message = AIMessage(content=f"Email summary:\n{summary}")
     
-    # Return the summary message to be added to state
-    return {"messages": [summary_message],
+   # Return both the original email and the summary
+    return {"messages": [HumanMessage(content=f"Original email:\n{email_body}"), summary_message],
             "email_summary": summary
             }
+    
 
 # Define the function that determines whether to continue or not
 def should_continue(state):
