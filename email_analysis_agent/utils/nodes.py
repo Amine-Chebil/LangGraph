@@ -37,6 +37,9 @@ Follow these rules:
 3. **Use as few bullets as necessary**—omit anything not explicitly mentioned.  
 4. Write formal, concise sentences.
 
+Bullet point format:
+- bullet point text.
+
 Note: Your summary will be used to generate a response to the client, so ensure it is clear and accurate.
 """
 
