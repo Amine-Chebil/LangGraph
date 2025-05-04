@@ -3,3 +3,4 @@
 .langgraph-data
 __pycache__/
 .langgraph_api/
+chroma_db/
