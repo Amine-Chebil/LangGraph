@@ -1,5 +1,4 @@
 from langchain_community.tools.tavily_search import TavilySearchResults
-from langchain_community.tools.openweathermap.tool import OpenWeatherMapQueryRun
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -17,8 +16,9 @@ rag_tool = create_retriever_tool(
     description="Searches hotel-related documents for relevant information."
 )
 
+# Only TavilySearchResults and rag_tool are included
+
 tools = [
-    TavilySearchResults(max_results=1),
-    OpenWeatherMapQueryRun(),  # Will automatically use OPENWEATHERMAP_API_KEY from environment
+    TavilySearchResults(max_results=3),
     rag_tool
 ]

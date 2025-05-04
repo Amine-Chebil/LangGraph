@@ -1,44 +1,28 @@
 from typing import TypedDict, Literal
-
 from langgraph.graph import StateGraph, END
-from response_generation_agent.utils.nodes import generate_response, should_continue, tool_node
+from response_generation_agent.utils.nodes import supervisor_node, should_continue, tool_node
 from response_generation_agent.utils.state import AgentState
 
-
-# Define the config
 class GraphConfig(TypedDict):
     model_name: Literal["anthropic", "openai", "groq"]
 
-# Define a new graph
 workflow = StateGraph(AgentState, config_schema=GraphConfig)
 
-# Define the nodes we will cycle between
-workflow.add_node("Generate Response", generate_response)
-
+# Add supervisor as entry point
+workflow.add_node("Supervisor", supervisor_node)
 workflow.add_node("Tools", tool_node)
 
-# Set the entrypoint
-# This means that this node is the first one called
-workflow.set_entry_point("Generate Response")
+workflow.set_entry_point("Supervisor")
 
-# We now add a conditional edge
 workflow.add_conditional_edges(
-    "Generate Response",
+    "Supervisor",
     should_continue,
-
     {
-        # If `tools`, then we call the tool node.
         "continue": "Tools",
-        # Otherwise we finish.
         "end": END,
     },
 )
 
-# We now add a normal edge from `tools` to `agent`.
-# This means that after `tools` is called, `agent` node is called next.
-workflow.add_edge("Tools", "Generate Response")
+workflow.add_edge("Tools", "Supervisor")
 
-# Finally, we compile it!
-# This compiles it into a LangChain Runnable,
-# meaning you can use it as you would any other runnable
 graph = workflow.compile()
