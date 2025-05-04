@@ -4,3 +4,6 @@ tavily-python
 langchain_community
 langchain_openai
 langchain_groq
+pyowm
+python-dotenv
+setuptools # Required by pyowm for pkg_resources
