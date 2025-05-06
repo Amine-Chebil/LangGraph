@@ -16,7 +16,7 @@ def _get_model(model_name: str, bind_tools: bool = True):
     elif model_name == "anthropic":
         model = ChatAnthropic(temperature=0, model_name="claude-3-sonnet-20240229")
     elif model_name == "groq":
-        model = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatile")
+        model = ChatGroq(temperature=0, model_name="meta-llama/llama-4-scout-17b-16e-instruct")
     else:
         raise ValueError(f"Unsupported model type: {model_name}")
 
@@ -32,10 +32,12 @@ Your task is to read each email and extract ONLY the main request(s) or question
  - Booking and reservation details  
 
 Follow these rules:  
-1. Begin each bullet with a strong verb (e.g. "Requests…", "Asks…", "Checks…").  
+1. Begin each bullet with a strong verb (e.g. "Requests", "Asks", "Checks").  
 2. Preserve exact information from the email. 
 3. **Use as few bullets as necessary**—omit anything not explicitly mentioned.  
 4. Write formal, concise sentences.
+
+Your output: provide only the bullet points.
 
 Bullet point format:
 - bullet point text.
