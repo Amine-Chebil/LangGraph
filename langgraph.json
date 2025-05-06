@@ -2,7 +2,7 @@
   "dependencies": ["./email_analysis_agent", "./response_generation_agent"],
   "graphs": {
     "email_analysis": "./email_analysis_agent/agent.py:graph",
-    "response_generation": "./response_generation_agent/agent.py:graph"
+    "response_generation": "./response_generation_agent/graph.py:supervisor"
   },
   "env": ".env"
 }
