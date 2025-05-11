@@ -7,7 +7,7 @@ from typing import Annotated
 from langchain_core.tools import tool, InjectedToolCallId
 from langgraph.prebuilt import InjectedState
 from langgraph.graph import MessagesState
-from langgraph.types import Command
+from langgraph.types import Command, Send
 
 # Load environment variables from .env file
 load_dotenv()
@@ -29,37 +29,43 @@ tools = [
 ]
 
 
-def create_handoff_tool(*, agent_name: str, description: str | None = None):
+def create_task_description_handoff_tool(
+    *, agent_name: str, description: str | None = None
+):
     name = f"transfer_to_{agent_name}"
-    description = description or f"Ask {agent_name} for help."
+    description = description or f"Ask {agent_name} for help. You must provide a clear task_description."
 
     @tool(name, description=description)
     def handoff_tool(
+        task_description: Annotated[
+            str,
+            "Description of what the next agent should do, including all of the relevant context.",
+        ],
         state: Annotated[MessagesState, InjectedState],
-        tool_call_id: Annotated[str, InjectedToolCallId],
     ) -> Command:
-        tool_message = {
-            "role": "tool",
-            "content": f"Successfully transferred to {agent_name}",
-            "name": name,
-            "tool_call_id": tool_call_id,
-        }
+        task_description_message = {"role": "user", "content": task_description}
+        agent_input = {"messages": [task_description_message]} 
+        
         return Command(
-            goto=agent_name,  
-            update={**state, "messages": state["messages"] + [tool_message]},  
-            graph=Command.PARENT,  
+            goto=[Send(agent_name, agent_input)],
+            graph=Command.PARENT,
         )
 
     return handoff_tool
 
 
 # Handoffs
-assign_to_rag_agent = create_handoff_tool(
+assign_to_rag_agent = create_task_description_handoff_tool(
     agent_name="rag_agent",
-    description="Assign task to a rag agent.",
+    description="Assign a hotel services-related task to the RAG agent. Provide a clear task_description including all relevant details from the user's query.",
 )
 
-assign_to_web_agent = create_handoff_tool(
+assign_to_web_agent = create_task_description_handoff_tool(
     agent_name="web_agent",
-    description="Assign task to a web agent.",
+    description="Assign a web search task (e.g., for weather, general knowledge) to the web agent. Provide a clear task_description including the specific question or topic to search for.",
+)
+
+assign_to_email_writer_agent = create_task_description_handoff_tool(
+    agent_name="email_writer_agent",
+    description="Assign the task of writing a final email response to the email_writer_agent. Provide the original client inquiry summary and all gathered information as the task_description."
 )
