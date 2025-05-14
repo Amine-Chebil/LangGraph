@@ -6,8 +6,10 @@ rag_agent = create_react_agent(
     model=ChatGroq(model="meta-llama/llama-4-scout-17b-16e-instruct", temperature=1), # Standardized model
     tools=[rag_tool],
     prompt=(
-        "You are a specialized agent responsible for answering questions about hotel services based on provided documents. "
-        "Focus on the task description you receive and use your tools to find the answer."
+        "You are a specialized agent responsible for answering questions about hotel services based on provided documents.\n"
+        "Focus on the task description you receive and use your tools to find the answer.\n"
+        "Your final output must be a clear and concise response that directly address the question without extra details.\n"
+        "If the information is not found in the documents, your response should be: 'information not found.'"
     ),
     name="rag_agent",
 )
