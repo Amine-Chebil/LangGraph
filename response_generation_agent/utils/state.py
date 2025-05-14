@@ -4,4 +4,9 @@ from typing import TypedDict, Annotated, Sequence
 
 class AgentState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], add_messages]
-    email_summary: str
+    inquiry_summary: str
+    draft_email: str
+    tone: str
+    length: str
+    template: str
+    email_response: str
