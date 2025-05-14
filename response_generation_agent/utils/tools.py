@@ -64,8 +64,3 @@ assign_to_web_agent = create_task_description_handoff_tool(
     agent_name="web_agent",
     description="Assign a web search task (e.g., for weather, general knowledge) to the web agent. Provide a clear task_description including the specific question or topic to search for.",
 )
-
-assign_to_email_writer_agent = create_task_description_handoff_tool(
-    agent_name="email_writer_agent",
-    description="Assign the task of writing a final email response to the email_writer_agent. Provide the original client inquiry summary and all gathered information as the task_description."
-)
