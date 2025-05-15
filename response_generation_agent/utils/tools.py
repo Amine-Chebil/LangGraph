@@ -14,7 +14,7 @@ load_dotenv()
 
 # Set up your vector store and retriever
 db = Chroma(persist_directory="chroma_db", embedding_function=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2"), collection_name="hotel")
-retriever = db.as_retriever(search_kwargs={"k": 3})
+retriever = db.as_retriever(search_kwargs={"k": 1})
 rag_tool = create_retriever_tool(
     retriever,
     name="hotel_docs_search",
@@ -57,7 +57,7 @@ def create_task_description_handoff_tool(
 # Handoffs
 assign_to_rag_agent = create_task_description_handoff_tool(
     agent_name="rag_agent",
-    description="Assign a hotel services-related task to the RAG agent. Provide a clear task_description including all relevant details from the user's query.",
+    description="Assign a hotel services-related task to the RAG agent. Provide a clear task_description including the specific question or topic from the user's query.",
 )
 
 assign_to_web_agent = create_task_description_handoff_tool(

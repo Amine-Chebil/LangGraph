@@ -54,32 +54,26 @@ email_writer_agent = create_react_agent(
 )
 
 supervisor_agent = create_react_agent(
-    model=ChatGroq(model="meta-llama/llama-4-scout-17b-16e-instruct", temperature=1),
+    model=ChatGroq(model="qwen-qwq-32b", temperature=0.6),
     tools=[
         assign_to_rag_agent,
         assign_to_web_agent
     ],
     prompt=(
-        "You are a supervisor managing a team of agents to respond to a single 'Client Inquiry Summary'. Your primary goal is to process this summary fully and ensure a comprehensive email response is generated for it. You will strictly follow the defined process without deviation.\n"
-        "You will receive the Client Inquiry Summary directly from the 'inquiry_summary' field in the state.\n"
+        "You are a supervisor managing a team of agents to respond to a single 'Client Inquiry Summary'. Your primary goal is to process this inquiry fully. You will strictly follow the defined process without deviation.\n"
         "Your process for handling the client inquiry is as follows:\n"
         "1. Analyze each point in the 'inquiry_summary'. Determine if it is:\n"
         "   a. A question about specific hotel services, amenities, or policies (target: RAG agent).\n"
         "   b. A question requiring general knowledge or information not specific to this hotel (target: Web agent).\n"
         "2. For points identified as hotel-specific (1a):\n"
-        "   - Delegate to the RAG agent using 'assign_to_rag_agent'. Provide a clear 'task_description'.\n"
+        "   - Delegate to the RAG agent using 'assign_to_rag_agent'. Provide a clear and direct 'task_description'.\n"
         "   - If the RAG agent responds that the information is not found in the documents, this is the definitive answer for that point. **Do not use the Web agent for this hotel-specific information.**\n"
         "3. For points identified as requiring external/web information (1b):\n"
-        "   - Delegate to the Web agent using 'assign_to_web_agent'. Provide a clear 'task_description'.\n"
-        "4. Process ALL points from the 'inquiry_summary' by delegating to the RAG and/or Web agents as needed. Each point is considered 'addressed' once the designated agent has provided its findings (including if information was not found).\n"
-        "5. CRITICAL STEP: Once ALL points from the 'inquiry_summary' have been addressed as per step 4, your IMMEDIATE, ONLY, AND MANDATORY next action is to create a draft email response for the client based on all gathered information.\n"
-        "   - You must draft a professional email that includes:\n"
-        "     i. Answers to all points from the original 'inquiry_summary'.\n"
-        "     ii. All relevant responses and information gathered by the RAG agent (explicitly stating if specific hotel information was not found in the documents).\n"
-        "     iii. All relevant responses and information gathered by the Web agent.\n"
-        "   - The email should be professional, clear, and directly address each inquiry point.\n"
-        "   - Consider the specified 'tone', 'length', and 'template' parameters when drafting the email.\n"
-        "6. After successfully creating the draft email response, your role in processing this inquiry is complete.\n"
+        "   - Delegate to the Web agent using 'assign_to_web_agent'. Provide a clear and 'task_description'.\n"
+        "4. Process ALL points from the 'inquiry_summary' by delegating to the RAG and/or Web agents as needed.\n"
+        "5. Finally end with drafting a reply email that address the client inquiry.\n"
+        "The reply email must be clear and professional. It should address only and exactly what the client need without extra information.\n"
+        "IMPORTANT: your last output must be exactly and only the reply email to the client."
     ),
     name="supervisor_agent",
 )
