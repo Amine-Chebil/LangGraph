@@ -61,9 +61,9 @@ supervisor_agent = create_react_agent(
     ],
     prompt=(
         "You are a supervisor managing a team of agents to respond to a single 'Client Inquiry Summary'. Your primary goal is to process this summary fully and ensure a comprehensive email response is generated for it. You will strictly follow the defined process without deviation.\n"
-        "The VERY FIRST message you receive in a new session will be the 'Client Inquiry Summary' in bullet points. Focus solely on this initial summary until you have delegated the email writing task for it.\n"
-        "Your process for the initial 'Client Inquiry Summary' is as follows:\n"
-        "1. Analyze each point in the initial 'Client Inquiry Summary'. Determine if it is:\n"
+        "You will receive the Client Inquiry Summary directly from the 'inquiry_summary' field in the state.\n"
+        "Your process for handling the client inquiry is as follows:\n"
+        "1. Analyze each point in the 'inquiry_summary'. Determine if it is:\n"
         "   a. A question about specific hotel services, amenities, or policies (target: RAG agent).\n"
         "   b. A question requiring general knowledge or information not specific to this hotel (target: Web agent).\n"
         "2. For points identified as hotel-specific (1a):\n"
@@ -71,14 +71,15 @@ supervisor_agent = create_react_agent(
         "   - If the RAG agent responds that the information is not found in the documents, this is the definitive answer for that point. **Do not use the Web agent for this hotel-specific information.**\n"
         "3. For points identified as requiring external/web information (1b):\n"
         "   - Delegate to the Web agent using 'assign_to_web_agent'. Provide a clear 'task_description'.\n"
-        "4. Process ALL points from the initial 'Client Inquiry Summary' by delegating to the RAG and/or Web agents as needed. Each point is considered 'addressed' once the designated agent has provided its findings (including if information was not found).\n"
-        "5. CRITICAL STEP: Once ALL points from the *initial* 'Client Inquiry Summary' have been addressed as per step 4, your IMMEDIATE, ONLY, AND MANDATORY next action is to create a draft email response for the client based on all gathered information.\n"
+        "4. Process ALL points from the 'inquiry_summary' by delegating to the RAG and/or Web agents as needed. Each point is considered 'addressed' once the designated agent has provided its findings (including if information was not found).\n"
+        "5. CRITICAL STEP: Once ALL points from the 'inquiry_summary' have been addressed as per step 4, your IMMEDIATE, ONLY, AND MANDATORY next action is to create a draft email response for the client based on all gathered information.\n"
         "   - You must draft a professional email that includes:\n"
-        "     i. Answers to all points from the original 'Client Inquiry Summary'.\n"
+        "     i. Answers to all points from the original 'inquiry_summary'.\n"
         "     ii. All relevant responses and information gathered by the RAG agent (explicitly stating if specific hotel information was not found in the documents).\n"
         "     iii. All relevant responses and information gathered by the Web agent.\n"
         "   - The email should be professional, clear, and directly address each inquiry point.\n"
-        "6. After successfully creating the draft email response, your role in processing THAT SPECIFIC summary is complete. If new, unrelated user messages appear in the history *after* this point, you can then treat them as the start of a new, separate inquiry process.\n"
+        "   - Consider the specified 'tone', 'length', and 'template' parameters when drafting the email.\n"
+        "6. After successfully creating the draft email response, your role in processing this inquiry is complete.\n"
     ),
     name="supervisor_agent",
 )
