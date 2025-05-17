@@ -1,5 +1,6 @@
 from langchain_groq import ChatGroq
 from langgraph.prebuilt import create_react_agent
+from pydantic import BaseModel, Field
 from response_generation_agent.utils.tools import rag_tool, TavilySearchResults, assign_to_rag_agent, assign_to_web_agent
 
 rag_agent = create_react_agent(
@@ -34,24 +35,11 @@ web_agent = create_react_agent(
     name="web_agent",
 )
 
-email_writer_agent = create_react_agent(
-    model=ChatGroq(model="meta-llama/llama-4-scout-17b-16e-instruct", temperature=1),
-    tools=[], # No tools needed for the email writer, it only processes input
-    prompt=(
-        "You are a professional email writing assistant. Your task is to compose a polite and helpful email response to a client based on their inquiry and the information gathered by other agents.\n"
-        "You will receive a task description containing:\n"
-        "1. The original client inquiry summary (as bullet points).\n"
-        "2. The information/answers provided by other agents (RAG agent for hotel docs, Web agent for general info).\n"
-        "Your email should:\n"
-        "- Address the client appropriately.\n"
-        "- Clearly answer each point from the client's inquiry summary, using the information provided.\n"
-        "- If some information could not be found, politely state that.\n"
-        "- Maintain a professional and helpful tone.\n"
-        "- Conclude the email appropriately (e.g., 'Best regards, Hotel Assistant').\n"
-        "Do not make up information. Only use what's provided in the task description."
-    ),
-    name="email_writer_agent",
-)
+
+class EmailResponse(BaseModel):
+    email_subject: str = Field(description="The subject of the email response")
+    email_body: str = Field(description="The body of the email response")
+
 
 supervisor_agent = create_react_agent(
     model=ChatGroq(model="qwen-qwq-32b", temperature=0.6),
@@ -71,9 +59,18 @@ supervisor_agent = create_react_agent(
         "3. For points identified as requiring external/web information (1b):\n"
         "   - Delegate to the Web agent using 'assign_to_web_agent'. Provide a clear and 'task_description'.\n"
         "4. Process ALL points from the 'inquiry_summary' by delegating to the RAG and/or Web agents as needed.\n"
-        "5. Finally end with drafting a reply email that address the client inquiry.\n"
-        "The reply email must be clear and professional. It should address only and exactly what the client need without extra information.\n"
-        "IMPORTANT: your last output must be exactly and only the reply email to the client."
+        "5. When you've gathered all necessary information, your FINAL OUTPUT must be a comprehensive email draft addressing the client inquiry.\n"
+        "This email draft will be automatically passed to the email writer agent for polishing.\n"
+        "\n"
+        "The draft email must:\n"
+        "- Include a subject and email body.\n"
+        "- Be a complete email addressing all inquiry points\n" 
+        "- Provide only the information requested by the client\n"
+        "- Include appropriate greeting and closing (determined by length and tone parameters)\n"
+        "- Format the email properly with clear structure\n"
+        "\n"
+        "IMPORTANT: Do not mention other agents or tools in your final email draft."
     ),
+    response_format=EmailResponse,
     name="supervisor_agent",
 )
